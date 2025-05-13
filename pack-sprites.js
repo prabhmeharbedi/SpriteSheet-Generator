@@ -7,30 +7,26 @@ require('dotenv').config(); // Load environment variables from .env file
 // CONFIGURATION: MODIFY THESE PARAMETERS IN .env FILE
 //=============================================================================
 const CONFIG = {
-    // Input/output paths
-    inputDir: process.env.INPUT_DIR || path.join(__dirname, 'images'),
-    outputDir: process.env.OUTPUT_DIR || path.join(__dirname, 'output'),
-    
     // Sprite sheet options
-    textureName: process.env.TEXTURE_NAME || 'atlas',
-    width: parseInt(process.env.WIDTH || '4096'),
-    height: parseInt(process.env.HEIGHT || '4096'),
-    padding: parseInt(process.env.PADDING || '2'),
+    textureName: process.env.TEXTURE_NAME,
+    width: parseInt(process.env.WIDTH),
+    height: parseInt(process.env.HEIGHT),
+    padding: parseInt(process.env.PADDING),
     
     // Processing options
-    allowRotation: process.env.ALLOW_ROTATION === 'true',
-    detectIdentical: process.env.DETECT_IDENTICAL !== 'false',
-    allowTrim: process.env.ALLOW_TRIM === 'true',
-    removeFileExtension: process.env.REMOVE_FILE_EXTENSION === 'true',
+    allowRotation: process.env.ALLOW_ROTATION,
+    detectIdentical: process.env.DETECT_IDENTICAL,
+    allowTrim: process.env.ALLOW_TRIM,
+    removeFileExtension: process.env.REMOVE_FILE_EXTENSION,
     
     // Advanced options
-    fixedSize: process.env.FIXED_SIZE === 'true',
-    powerOfTwo: process.env.POWER_OF_TWO === 'true',
-    prependFolderName: process.env.PREPEND_FOLDER_NAME === 'true',
-    scale: parseFloat(process.env.SCALE || '1'),
+    fixedSize: process.env.FIXED_SIZE,
+    powerOfTwo: process.env.POWER_OF_TWO,
+    prependFolderName: process.env.PREPEND_FOLDER_NAME,
+    scale: parseFloat(process.env.SCALE),
     
     // Export format
-    exporter: process.env.EXPORTER || 'JsonHash'
+    exporter: process.env.EXPORTER || 'JsonArray'
 };
 
 // Print the configuration for debugging
@@ -108,11 +104,13 @@ function packTextures(inputDir, outputDir, options) {
 }
 
 // Run the packing process with the configuration
-packTextures(CONFIG.inputDir, CONFIG.outputDir, CONFIG)
-    .then(result => {
-        console.log('✅ Sprite sheet generation complete!');
-        console.log(`Files created in: ${result.outputDir}`);
-    })
-    .catch(error => {
-        console.error('❌ Error generating sprite sheet:', error);
-    }); 
+if (require.main === module) {
+    packTextures(CONFIG.inputDir, CONFIG.outputDir, CONFIG)
+        .then(result => {
+            console.log('✅ Sprite sheet generation complete!');
+            console.log(`Files created in: ${result.outputDir}`);
+        })
+        .catch(error => {
+            console.error('❌ Error generating sprite sheet:', error);
+        });
+}

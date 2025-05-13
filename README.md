@@ -1,109 +1,134 @@
 # Sprite Sheet Generator
 
-This script uses free-tex-packer-core to generate sprite sheets from PNG images.
+This project provides a script and an API server to generate sprite sheets from PNG images using [free-tex-packer-core](https://www.npmjs.com/package/free-tex-packer-core).
+
+---
 
 ## Setup
 
-1. Install dependencies:
-   ```
+1. **Clone the repository and install dependencies:**
+   ```sh
    npm install
    ```
 
-2. Create a `.env` file with your configuration (or use default values):
+2. **(Optional) Create a `.env` file for configuration:**
+   - Only needed for advanced options (e.g., port, texture settings). 
+   - Example:
+     ```
+     PORT=3000
+     TEXTURE_NAME=spritesheet
+     WIDTH=4096
+     HEIGHT=4096
+     PADDING=2
+     EXPORTER=JsonArray
+     ```
+
+---
+
+## Running the API Server
+
+1. **Start the server:**
+   ```sh
+   node server.js
    ```
-   npm run create-env
+   You should see:
+   ```
+   SpriteSheet Generator server running on port 3000
    ```
 
-3. The script will automatically process images from the `images` directory and output the results to the `output` directory.
+2. **Check the API status:**
+   - Open your browser or use curl:
+     ```sh
+     curl http://localhost:3000/
+     ```
+   - You will receive a pretty-printed JSON response describing the API.
 
-## Configuration
+---
 
-### Using Environment Variables (.env file)
+## API Usage
 
-The easiest way to configure the texture packer is by editing the `.env` file. 
-After running `npm run create-env`, you'll have a file with configuration parameters.
+### **POST /generate-spritesheet**
+Generate a spritesheet from images in a directory.
 
-Just edit the values as needed and save the file. Then run the packer and it will use your settings:
+- **Request:**
+  - Method: `POST`
+  - URL: `http://localhost:3000/generate-spritesheet`
+  - Body (JSON):
+    ```json
+    {
+      "inputDir": "./images",         // Path to input images directory (required)
+      "outputDir": "./output"         // Path to output directory (required)
+    }
+    ```
+- **Response:**
+  - On success:
+    ```json
+    {
+      "success": true,
+      "outputDir": "./output",
+      "files": ["./output/spritesheet.png", "./output/spritesheet.json"]
+    }
+    ```
+  - On error:
+    ```json
+    {
+      "success": false,
+      "error": "Error message"
+    }
+    ```
 
-```
-npm run pack
-```
-
-### Using the CONFIG Object (Alternative)
-
-All configuration parameters are also in a `CONFIG` object at the top of `pack-sprites.js`:
-
-```javascript
-const CONFIG = {
-    // Input/output paths
-    inputDir: process.env.INPUT_DIR || path.join(__dirname, 'images'),
-    outputDir: process.env.OUTPUT_DIR || path.join(__dirname, 'output'),
-    
-    // Sprite sheet options
-    textureName: process.env.TEXTURE_NAME || 'atlas',
-    width: parseInt(process.env.WIDTH || '4096'),
-    height: parseInt(process.env.HEIGHT || '4096'),
-    padding: parseInt(process.env.PADDING || '2'),
-    
-    // Processing options
-    allowRotation: false,         // Allow rotating sprites for packing
-    detectIdentical: true,        // Detect and reuse identical images
-    allowTrim: false,             // Trim transparent pixels from sprites
-    removeFileExtension: false,   // Remove file extensions from sprite names
-    
-    // Advanced options
-    fixedSize: false,             // Use exactly the width/height specified
-    powerOfTwo: false,            // Force dimensions to be powers of two
-    prependFolderName: false,     // Add folder names to sprite names
-    scale: 1,                     // Output scale factor
-    
-    // Export format
-    exporter: 'JsonHash'          // Format: JsonHash, JsonArray, Phaser3, etc.
-};
-```
-
-### Running the Basic Script
-
-```
-npm run pack
+#### Example using curl:
+```sh
+curl -X POST http://localhost:3000/generate-spritesheet \
+  -H "Content-Type: application/json" \
+  -d '{"inputDir":"./images","outputDir":"./output"}'
 ```
 
-## Using the CLI Version
+---
 
-For more flexibility, you can use the command-line version which accepts parameters:
+### **GET /**
+Returns API status and endpoint information.
 
-```
-node pack-sprites-cli.js [options]
-```
+- **Request:**
+  - Method: `GET`
+  - URL: `http://localhost:3000/`
+- **Response:**
+  - Pretty-printed JSON with API info and usage.
 
-Options:
-- `--input` - Input directory (default: ./images)
-- `--output` - Output directory (default: ./output)
-- `--textureName` - Base name for output files (default: game-atlas)
-- `--width` - Maximum width of the sprite sheet (default: 4096)
-- `--height` - Maximum height of the sprite sheet (default: 4096)
-- `--padding` - Padding between sprites in pixels (default: 2)
-- `--exporter` - Export format (default: JsonHash)
-- `--allowRotation` - Allow sprite rotation (default: true)
-- `--detectIdentical` - Detect identical images (default: true)
-- `--allowTrim` - Trim transparent pixels (default: true)
-- `--fixedSize` - Use fixed size (default: false)
-- `--powerOfTwo` - Force power of two sizes (default: false)
-- `--scale` - Output scale (default: 1)
-- `--help` - Show help message
+---
 
-### Examples:
+## Advanced Configuration
 
-```
-# Change input and output directories
-node pack-sprites-cli.js --input ./my-images --output ./my-output
+You can set additional options in your `.env` file for advanced sprite sheet settings (e.g., `TEXTURE_NAME`, `WIDTH`, `HEIGHT`, `PADDING`, `EXPORTER`, etc.).
 
-# Change texture name and export format
-node pack-sprites-cli.js --textureName my-atlas --exporter Phaser3
+- These are only used if you want to customize the sprite sheet generation beyond the API defaults.
+- See the top of `pack-sprites.js` for all available options.
 
-# Set custom dimensions and padding
-node pack-sprites-cli.js --width 2048 --height 2048 --padding 4
-```
+---
+
+## Legacy CLI Usage (Optional)
+
+You can still use the CLI scripts for direct sprite sheet generation:
+
+- **Basic script:**
+  ```sh
+  npm run pack
+  ```
+- **Command-line version:**
+  ```sh
+  node pack-sprites-cli.js [options]
+  ```
+  See `pack-sprites-cli.js --help` for all options.
+
+---
+
+## Output
+
+The script or API will generate two files in the output directory:
+- `spritesheet.png`: The sprite sheet image (name depends on textureName setting)
+- `spritesheet.json`: The JSON file containing coordinates of each sprite
+
+---
 
 ## Available Exporters
 
@@ -124,8 +149,9 @@ node pack-sprites-cli.js --width 2048 --height 2048 --padding 4
 - `GodotAtlas` - Godot Atlas format
 - `GodotTileset` - Godot Tileset format
 
-## Output
+---
 
-The script will generate two files in the `output` directory:
-- `atlas.png`: The sprite sheet image (name depends on textureName setting)
-- `atlas.json`: The JSON file containing coordinates of each sprite 
+## Troubleshooting
+- Ensure your `inputDir` and `outputDir` exist and are accessible.
+- The API requires both directories to be specified in every request.
+- For advanced errors, check the server logs for details. 
