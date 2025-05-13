@@ -1,0 +1,15 @@
+{
+  "name": "texture-packer-script",
+  "version": "1.0.0",
+  "description": "Script to generate sprite sheets using free-tex-packer-core",
+  "main": "pack-sprites.js",
+  "scripts": {
+    "pack": "node pack-sprites.js",
+    "pack-cli": "node pack-sprites-cli.js",
+    "create-env": "node create-env.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "free-tex-packer-core": "^0.3.4"
+  }
+} 
