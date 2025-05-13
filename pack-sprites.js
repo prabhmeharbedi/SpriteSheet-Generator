@@ -8,25 +8,25 @@ require('dotenv').config(); // Load environment variables from .env file
 //=============================================================================
 const CONFIG = {
     // Sprite sheet options
-    textureName: process.env.TEXTURE_NAME,
-    width: parseInt(process.env.WIDTH),
-    height: parseInt(process.env.HEIGHT),
-    padding: parseInt(process.env.PADDING),
+    textureName: process.env.TEXTURE_NAME || 'atlas',
+    width: parseInt(process.env.WIDTH || '4096'),
+    height: parseInt(process.env.HEIGHT || '4096'),
+    padding: parseInt(process.env.PADDING || '2'),
     
     // Processing options
-    allowRotation: process.env.ALLOW_ROTATION,
-    detectIdentical: process.env.DETECT_IDENTICAL,
-    allowTrim: process.env.ALLOW_TRIM,
-    removeFileExtension: process.env.REMOVE_FILE_EXTENSION,
+    allowRotation: process.env.ALLOW_ROTATION === 'true',
+    detectIdentical: process.env.DETECT_IDENTICAL !== 'false',
+    allowTrim: process.env.ALLOW_TRIM === 'true',
+    removeFileExtension: process.env.REMOVE_FILE_EXTENSION === 'true',
     
     // Advanced options
-    fixedSize: process.env.FIXED_SIZE,
-    powerOfTwo: process.env.POWER_OF_TWO,
-    prependFolderName: process.env.PREPEND_FOLDER_NAME,
-    scale: parseFloat(process.env.SCALE),
+    fixedSize: process.env.FIXED_SIZE === 'true',
+    powerOfTwo: process.env.POWER_OF_TWO === 'true',
+    prependFolderName: process.env.PREPEND_FOLDER_NAME === 'true',
+    scale: parseFloat(process.env.SCALE || '1'),
     
     // Export format
-    exporter: process.env.EXPORTER || 'JsonArray'
+    exporter: process.env.EXPORTER || 'JsonHash'
 };
 
 // Print the configuration for debugging
@@ -114,3 +114,5 @@ if (require.main === module) {
             console.error('❌ Error generating sprite sheet:', error);
         });
 }
+
+module.exports = { packTextures, CONFIG };
