@@ -69,6 +69,13 @@ function packTextures(inputDir, outputDir, options) {
         
         texturePacker(images, options, (files) => {
             try {
+                if (!Array.isArray(files)) {
+                    console.error('❌ texturePacker did not return a valid files array.');
+                    console.error('Images:', images);
+                    console.error('Options:', options);
+                    reject(new Error('texturePacker failed: output files is undefined or not an array. Check your input images and options.'));
+                    return;
+                }
                 console.log(`Packing complete. Generated ${files.length} files.`);
                 
                 const generatedFiles = [];
